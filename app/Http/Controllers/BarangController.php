@@ -10,7 +10,8 @@ class BarangController extends Controller
 {
     public function index()
     {
-        return view('Administrator.Barang.index');
+        $supplier = DB::table('supplier')->get();
+        return view('Administrator.Barang.index', compact('supplier'));
     }
     public function show_barang()
     {
@@ -53,7 +54,8 @@ class BarangController extends Controller
     public function linkadd_barang()
     {
         $brg = $this::getID();
-        return view('Administrator.Barang.Form.form', compact('brg'));
+        $supplier = DB::table('supplier')->get();
+        return view('Administrator.Barang.Form.form', compact(['brg', 'supplier']));
     }
 
     public function get_barang_based_on_today()
@@ -71,10 +73,11 @@ class BarangController extends Controller
     {
         $attr = [
             'id_barang' => $req->id,
-            'nama' => $req->name,
-            'ukuran' => $req->size,
-            'type' => $req->type,
-            'stok' => $req->stok,
+            'id_supplier' => $req->supplier,
+            'nama' => "$req->name",
+            'ukuran' => "$req->size",
+            'type' => "$req->type",
+            'stok' => "$req->stok",
         ];
         Barang::create($attr);
         $brg = $this::getID();
@@ -100,8 +103,9 @@ class BarangController extends Controller
         $attr = [
 
             'nama' => $req->name,
-            'ukuran' => $req->size,
-            'type' => $req->type,
+            'id_supplier' => $req->supplier,
+            'ukuran' => "$req->size",
+            'type' => "$req->type",
             'stok' => $req->stok,
         ];
         $qry = Barang::where('id_barang', $req->id)->update($attr);

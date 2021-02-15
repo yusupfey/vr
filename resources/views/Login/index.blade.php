@@ -26,7 +26,9 @@
 </head>
 <body>
     <div class="container d-flex justify-content-center">
-        
+    <div class="loading pt-5" style="display: none;  background-color: #f2f2f2;z-index: 99;opacity: 1; position:fixed; text-align:center; height:100%;width:100%;">
+    <img src="{{asset('loader/Rolling.svg')}}" style=" width:115px;padding-top:10%" alt="">
+  </div>  
         <div class="row d-flex justify-content-center">
             <div class="col-md-12 ">
                 <div class="text-center mt-4">
@@ -95,37 +97,25 @@
                         method:'post',
                         data:{_token:_token,username:username,password:password},
                         dataType:'json',
+                        beforeSend:function(){
+                            $('#form_modal').modal('hide');
+                            $(".loading").css("display","block");
+                        },
                         success:function(res){
                             // console.log(res)
+
                             if(res=='berhasil'){
+
                                 $('input[name="username"]').val('');
                                 $('.notivUser').html('');
                                 $('.notivPass').html('');
                                 $('input[name="password"]').val('');
-                                let timerInterval
-                                    Swal.fire({
-                                    title: 'Loading !',
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                    onBeforeOpen: () => {
-                                        Swal.showLoading()
-                                        timerInterval = setInterval(() => {
-                                        const content = Swal.getContent()
-                                        if (content) {
-                                        }
-                                        }, 100)
-                                    },
-                                    onClose: () => {
-                                        clearInterval(timerInterval)
-                                    }
-                                    }).then((result) => {
-                                    /* Read more about handling dismissals below */
-                                    if (result.dismiss === Swal.DismissReason.timer) {
-                                        console.log('I was closed by the timer')
-                                    }
-                                    })
+                                
                                 window.location = "/Dashboard";
+                            $(".loading").css("display","none");
                             }else{
+                            $(".loading").css("display","none");
+
                                 $('.notivUser').html('');
                                 $('.notivPass').html('');
                                 $('input[name="username"]').val('');

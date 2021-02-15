@@ -13,7 +13,30 @@ class SupplierController extends Controller
         $posts = supplier::get();
         return view('Administrator.Supplier.index', compact('posts'));
     }
+    public function show_data()
+    {
+        $posts = DB::select("select * from supplier order by id_supplier");
+        return \DataTables::of($posts)
+            ->addColumn('aksi', function ($post) {
+                return
+                    '<div class="dropdown show">
+                            <a class="btn btn-danger dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Action
+                            </a>
 
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <button class="dropdown-item" onclick="edit(`' . $post->id_supplier . '`)">Edit</button>
+                        <button class="dropdown-item" onclick="hapus(`' . $post->id_supplier . '`)">Delete</button>
+                            </div>
+                        </div>
+                        ';
+            })->rawColumns(['aksi'])->make(true);
+    }
+    public function showdata_id($id)
+    {
+        $posts = supplier::where('id_supplier', $id)->get();
+        echo json_encode($posts);
+    }
     public function getID()
     {
         $getcode = DB::select('Select max(id_supplier) as MaxKode FROM supplier');
@@ -56,5 +79,21 @@ class SupplierController extends Controller
         supplier::create($attr);
         $sup = $this::getID();
         echo json_encode(["added", $sup]);
+    }
+    public function remove($id)
+    {
+        supplier::where('id_supplier', $id)->delete();
+        echo json_encode('remove');
+    }
+    public function update(Request $req)
+    {
+        $attr = [
+            'supplier' => $req->name,
+            'alamat' => $req->alamat,
+            'notel' => $req->telp,
+        ];
+        supplier::where('id_supplier', $req->id)->update($attr);
+        session()->flash('success', 'Data Berhasil di update');
+        return redirect()->to('supplier');
     }
 }

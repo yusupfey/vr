@@ -2,9 +2,6 @@
 @section('title',' CHECK PURCASHING')
 @section('content')
     <div class="card">
-        <div class="card-header bg-primary">
-            Check
-        </div>
         <div class="card-body">
             <div class="table-responsive">
                 @if (session()->has('success'))
@@ -51,6 +48,11 @@
                 <div class="modal-body">
                     <table cellpadding="5">
                         <tr>
+                            <td>Kode PR</td>
+                            <td>:</td>
+                            <td class="targetKD"></td>
+                        </tr>
+                        <tr>
                             <td>Permintaan</td>
                             <td>:</td>
                             <td class="targetPermintaan"></td>
@@ -92,6 +94,80 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="receive_barang" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Form Terima Barang</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/terima_barang" method="post">
+                <div class="modal-body">
+                    @csrf
+                        <table cellpadding="5">
+                        <tr>
+                            <td>No Faktur</td>
+                            <td>:</td>
+                            <td><input type='text' name='noFaktur' required></td>
+                        </tr>
+                        <tr>
+                            <td>Kode PR</td>
+                            <td>:</td>
+                            <td class="targetKD"></td>
+                        </tr>
+                        <tr>
+                            <td>Diminta oleh</td>
+                            <td>:</td>
+                            <td class="targetPermintaan"></td>
+                        </tr>
+                        <tr>
+                            <td>Diterima</td>
+                            <td>:</td>
+                            <td class="targetDiterima"></td>
+                        </tr>
+                        <tr>
+                            <td>tanggal</td>
+                            <td>:</td>
+                            <td class="targetTanggal"></td>
+                        </tr>
+                        <tr>
+                            <td>Keterangan</td>
+                            <td>:</td>
+                            <td class="targetKet"></td>
+                        </tr>
+                        <tr>
+                            <td>status</td>
+                            <td>:</td>
+                            <td class="targetStatus"></td>
+                        </tr>
+                        </table>
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table table-collapse">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Qty Permitaan</th>
+                                        <th>Satuan</th>
+                                        <th>qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="targetReq">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Selesai</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('footer')
     <script>
@@ -119,12 +195,12 @@
         function approve(id,act){
             Swal.fire({
                 title: 'Anda Yakin ?',
-                text: "You won't be able to revert this!",
+                text: "Pastikan anda sudah check stok barang sebelum melakukan purchasing!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Approve it!'
+                confirmButtonText: 'Yes!'
                 }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -141,6 +217,44 @@
                                 Swal.fire(
                                     'Success!',
                                     'Barang telah diapprove',
+                                    'success'
+                                )
+                                show();
+                            }
+                            $(".loading").css("display","none");
+                            console.log(res)
+                        }
+                        
+                    });
+                    
+                }
+            });
+        }
+        function acc(id,act){
+            Swal.fire({
+                title: 'Perhatian !',
+                text: "PR akan di kirim ke kantor pusat! Pastikan data PR sesuai dengan item yang di butuhkan",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url:"/request_approve/"+act+"/"+id, 
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType:'json',
+                        beforeSend:function(){
+                            $(".loading").css("display","block");
+                        },
+                        success:function(res){
+                            if(res=='added'){
+                                Swal.fire(
+                                    'Success!',
+                                    'Barang telah diacc',
                                     'success'
                                 )
                                 show();
@@ -245,54 +359,65 @@
                 confirmButtonText: 'Yes!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    $.ajax({
-                        url:"/request_approve/"+act+"/"+id, 
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        dataType:'json',
-                        beforeSend:function(){
-                            $(".loading").css("display","block");
-                        },
-                        success:function(res){
-                            if(res=='added'){
-                                Swal.fire(
-                                    'Success!',
-                                    'purchesing selesai',
-                                    'success'
-                                )
-                                show();
-                            }
-                            $(".loading").css("display","none");
+                    $('#receive_barang').modal('show');
+                    $('#detail_modal').modal('hide')
+
+                    // $.ajax({
+                    //     url:"/request_approve/"+act+"/"+id, 
+                    //     headers: {
+                    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    //     },
+                    //     dataType:'json',
+                    //     beforeSend:function(){
+                    //         $(".loading").css("display","block");
+                    //     },
+                    //     success:function(res){
+                    //         if(res=='added'){
+                    //             Swal.fire(
+                    //                 'Success!',
+                    //                 'purchesing selesai',
+                    //                 'success'
+                    //             )
+                    //             show();
+                    //         }
+                    //         $(".loading").css("display","none");
 
                             
-                            console.log(res)
-                        }
+                    //         console.log(res)
+                    //     }
                         
-                    });
+                    // });
                     
                 }
             });
         }
         function detail(id){
             $('#detail_modal').modal('show')
+            $('#receive_barang').modal('hide')
             $('.target').html('')
             $.ajax({
                 url:"/request_check/detail/"+id,
                 dataType:'json',
                 success:function(res){
+                        let d = new Date();
+                            let m = d.getMonth() + 1
+                            let y = d.getFullYear()
+                            let str = y.toString().substr(-2);
+                        $('.targetKD').html(res[0][0]['id']+'/PR/Factory/'+m+'/'+str)
                         $('.targetPermintaan').html(res[0][0]['user'])
                         $('.targetTanggal').html(res[0][0]['created_at'])
                         $('.targetKet').html(res[0][0]['keterangan'])
                         let cek="",act="" 
                         if(res[0][0]['status']==4){
-                            act = "<div class='badge badge-success'>Selesai</div>"
-                        }else if(res[0][0]['status']==1){
-                            act = "<div class='badge badge-warning'>on proces</div>"
-                        }else if(res[0][0]['status']==2){
-                            act = "<div class='badge badge-primary'>on order</div>"
-                        }else if(res[0][0]['status']==3){
                             act = "<div class='badge badge-info'>Sedang pengiriman</div>"
+                        }else if(res[0][0]['status']==1){
+                            act = "<div class='badge badge-warning'>On proces</div>"
+                        }else if(res[0][0]['status']==2){
+                            act = "<div class='badge badge-primary'>Wait to order</div>"
+                        }else if(res[0][0]['status']==3){
+                            act = "<div class='badge badge-info'>On order</div>"
+                        }else if(res[0][0]['status']==5){
+                            act = "<div class='badge badge-success'>Selesai</div>"
                         }else{
                             act = "<div class='badge badge-danger'>Menunggu di approve supervisor</div>"
                         }
@@ -302,9 +427,61 @@
                     $.each(res[1], function(ket,item){
                         $('.target').append("<tr><td>"+item['nama']+"</td><td>"+item['qty']+"</td><td>"+item['satuan']+"</td><td>"+item['keterangan']+"</td></tr>")
                     })
+                    console.log(res[0])
+                }
+            })
+        }
+        function receive(id){
+            $('#receive_barang').modal('show');
+            $('#detail_modal').modal('hide')
+            $('.targetReq').html('')
+
+            $.ajax({
+                url:"/request_check/detail/"+id,
+                dataType:'json',
+                        success:function(res){
+                            let d = new Date();
+                            let day =  d.getDate()
+                            let m = d.getMonth() + 1
+                            let y = d.getFullYear()
+                            let str = y.toString().substr(-2);
+                        $('.targetKD').html("<input readonly type='text' value="+res[0][0]['id']+'/PR/Factory/'+m+'/'+str+" name='noPR'><input readonly type='hidden' name='id_rq' value="+id+">")
+                        $('.targetPermintaan').html("<input readonly type='text' name='permintaan' value='"+res[0][0]['user']+"'>")
+                        $('.targetDiterima').html("<input readonly type='text' name='diterima' value='<?=Session::get('nama')?>'>")
+                        $('.targetTanggal').html("<input readonly type='text' name='date' value="+y+'-'+m+'-'+day+">")
+                        $('.targetKet').html(res[0][0]['keterangan'])
+                        let cek="",act="" 
+                        if(res[0][0]['status']==4){
+                            act = "<div class='badge badge-info'>Sedang pengiriman</div>"
+                        }else if(res[0][0]['status']==1){
+                            act = "<div class='badge badge-warning'>On proces</div>"
+                        }else if(res[0][0]['status']==2){
+                            act = "<div class='badge badge-primary'>Wait to order</div>"
+                        }else if(res[0][0]['status']==3){
+                            act = "<div class='badge badge-info'>On order</div>"
+                        }else if(res[0][0]['status']==4){
+                            act = "<div class='badge badge-success'>Selesai</div>"
+                        }else if(res[0][0]['status']==5){
+                            act = "<div class='badge badge-success'>Selesai</div>"
+                        }else{
+                            act = "<div class='badge badge-danger'>Menunggu di approve supervisor</div>"
+                        }
+                        
+                        $('.targetStatus').html(act)
+                    let ket=''
+                    $.each(res[1], function(ket,item){
+                        $('.targetReq').append("<tr><td>"+item['nama']+" <input type='hidden' readonly name='id_barang[]' value="+item['code_item']+"  required><input type='hidden' readonly name='keterangan[]' value='"+item['keterangan']+"'  required></td><td>"+item['qty']+"</td><td><input type='text' name='satuan[]' value='"+item['satuan']+"' readonly></td><td><input type='number' name='qty[]' required></td></tr>")
+                    })
                     console.log(res[1])
                 }
             })
+        }
+        function cari_barang(){
+            let id = $('#cari').val()  // get id barang
+            let nama = $('#'+id).text() // get nama barang
+
+            $('#targetTable').append('<tr><td><input type="text" value="'+id+'"></td><td>'+nama+'</td><td><input type="number"></td></td></tr>')
+            console.log($('#'+id).text())
         }
     </script>
 @endsection

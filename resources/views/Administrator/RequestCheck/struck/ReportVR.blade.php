@@ -88,15 +88,15 @@
                 <td class="p-2 td-font" rowspan="1"style="padding-bottom:10px;"><b>Untuk di isi di purceshing Dept</b><p>Tanggal dipesan : @php echo date('Y-m-d') @endphp <span style="margin-left:40px">Order (PO) No : </span>{{$post[0]->id}}</p></td>
             </tr>
              <tr>
-                <td class="p-2 td-font "style="padding-top:20px; padding-bottom:20px;"><b>Waktu Dibutuhkan : </b>Segera</td>
+                <td class="p-2 td-font "style="padding-top:20px; padding-bottom:20px;"><b>Waktu Dibutuhkan : </b><br>Segera</td>
                 <td class="p-2 td-font "style="padding-top:20px; padding-bottom:20px;"><b>TTD Purchasing Dept.</b> ...............................</td>
             </tr>
             <tr>
-            <td class="p-2 td-font"style="padding-top:40px;"><b>Diminta Oleh</b> : {{$post[0]->user}}</td>
-                <td class="p-2 td-font"style="padding-bottom:40px;"><b>Diketahi Oleh Finance Manager</b></td>
+            <td class="p-2 td-font"style="padding-top:20px;"><b>Diminta Oleh</b> :<br> {{$post[0]->user}}</td>
+                <td class="p-2 td-font"style="padding-top:-50px;" rowspan="2"><b>Diketauhi Oleh Finance Manager</b><br><br><br><br></td>
             </tr>
             <tr>
-                <td class="p-2 td-font" colspan="2" style="padding-top:10px; text-align:center"><b class="mr-5">Disetujui Oleh <br><br> <br><br> {{Session::get('nama')}} </b></td>
+                <td class="p-2 td-font" style="padding-top:20px;"><b>Disetujui Oleh :</b><br> {{$post[0]->disetujui}} </td>
             </tr>
         </table>
     </div>

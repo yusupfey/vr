@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TUserController extends Controller
+class LogUserController extends Controller
 {
     public function index()
     {
 
-        return view('Administrator.User.index');
+        return view('Administrator.LogUser.index');
     }
     public function show_user()
     {
-        $post = DB::select("select users.*, akses.* from users inner join akses on users.id_akses=akses.akses_id");
+        $post = DB::select("select * from Log_user");
         // $post = DB::select("select * from users");
         return \DataTables::of($post)
             ->addColumn('aksi', function ($post) {
@@ -26,7 +26,7 @@ class TUserController extends Controller
 
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <button class="dropdown-item" onclick="edit(`' . $post->nik . '`)">Edit</button>
-                                <button class="dropdown-item" onclick="hapus(`' . $post->nik . '`)">Delete</button>
+                                <button class="dropdown-item" onclick="hapus(`' . $post->id_user . '`)">Delete</button>
                             </div>
                         </div>
                         ';
@@ -34,10 +34,10 @@ class TUserController extends Controller
     }
     public function select()
     {
-        $qry = DB::table('akses')->get();
-        $return = '<option selected disabled>Pilih Position</option>';
+        $qry = DB::select("SELECT log_user.*, users.* from log_user RIGHT JOIN users on users.nik=log_user.nik where log_user.nik is null");
+        $return = '<option selected disabled>Pilih User</option>';
         foreach ($qry as $item) {
-            $return .= '<option value=' . $item->akses_id . '>' . $item->akses . '</option>';
+            $return .= '<option value=' . $item->nik . '>' . $item->nama . '</option>';
         }
         echo json_encode($return);
     }
@@ -46,37 +46,28 @@ class TUserController extends Controller
     {
         if ($act == "Simpan") {
             $attr = [
-                'nik' => $req->id,
-                'nama' => $req->name,
-                'temp_lahir' => $req->tempat,
-                'tgl_lahir' => $req->tgl_lahir,
-                'Alamat' => $req->alamat,
-                'id_akses' => $req->position,
-                'pic' => 'default.png',
+                'nik' => $req->nik,
+                'username' => $req->username,
+                'password' => $req->password,
             ];
-            DB::table('users')->insert($attr);
+            DB::table('log_user')->insert($attr);
         } else {
             $attr = [
-                'nik' => $req->id,
-                'nama' => $req->name,
-                'temp_lahir' => $req->tempat,
-                'tgl_lahir' => $req->tgl_lahir,
-                'Alamat' => $req->alamat,
-                'id_akses' => $req->position,
-                'pic' => 'default.png',
+                'username' => $req->username,
+                'password' => $req->password,
             ];
-            DB::table('users')->where('nik', $req->id,)->update($attr);
+            DB::table('log_user')->where('id_user', $req->id,)->update($attr);
         }
         echo json_encode("Berhasil");
     }
     public function get_where($nik)
     {
-        $qry = DB::table('users')->where('nik', $nik)->get();
+        $qry = DB::table('log_user')->where('nik', $nik)->get();
         echo json_encode($qry);
     }
-    public function remove($nik)
+    public function remove($id)
     {
-        DB::table('users')->where('nik', $nik)->delete();
+        DB::table('log_user')->where('id_user', $id)->delete();
         echo json_encode("remove");
     }
 }

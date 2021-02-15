@@ -33,6 +33,15 @@
                                         <label>Stock</label>
                                         <input type="text" name='stok' class="form-control" placeholder="Type">
                                     </div>
+                                    <div class="form-group">
+                                        <label>Supplier</label>
+                                        <select name="supplier" class="form-control">
+                                            <option selected disabled>Pilih Supplier</option>
+                                            @foreach ($supplier as $item)
+                                                <option value="{{$item->id_supplier}}">{{$item->supplier}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <hr>
                                     <div class="form-group d-flex justify-content-end">
                                         <button type="button" class="btn btn-primary" id="create">Create</button>
@@ -55,8 +64,9 @@
                                             <th>Nama Barang</th>
                                             <th>Ukuran</th>
                                             <th>Type</th>
-                                            <th>stok</th>
-                                            <th>Action</th>
+                                            <th>Stok</th>
+                                            <th>Supplier</th>
+                                            {{-- <th>Action</th> --}}
                                         </thead>
                                         <tbody>
                                         </tbody>
@@ -93,7 +103,8 @@
                     {data:'ukuran',name:'ukuran'},
                     {data:'type',name:'type'},
                     {data:'stok',name:'stok'},
-                    {data:'aksi',name:'aksi'},
+                    {data:'id_supplier',name:'id_supplier'},
+                    // {data:'aksi',name:'aksi'},
 
                 ]
             });
@@ -104,6 +115,7 @@
                 let size = $('input[name="size"]').val()
                 let type = $('input[name="type"]').val()
                 let stok = $('input[name="stok"]').val()
+                let supplier = $('select[name="supplier"]').val()
                 let _token = $('input[name="_token"]').val()
                 
                 $.ajax({
@@ -112,7 +124,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     method:'post',
-                    data:{_token,id:id,name:name,size:size,type:type,stok:stok},
+                    data:{_token,id:id,name:name,size:size,type:type,stok:stok,supplier:supplier},
                     dataType:'json',
                     success:function(res){
                         if(res[0]=='added'){

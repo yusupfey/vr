@@ -80,10 +80,17 @@
                     <div class="modal-body">
                             <div class="form-group">
                                 <label for="">Item</label>
-                                <select class="itemSelect" name="select" style="width:100%;height:20px">
+                                <select class="supplier" name="selectsupplier" style="width:100%;height:20px">
+                                    <option selected disabled>Pilih supplier</option>
                                     @foreach ($post as $item)
-                                        <option value="{{$item->id_barang}}">{{$item->nama}}</option>
+                                        <option value="{{$item->id_supplier}}">{{$item->supplier}}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Item</label>
+                                <select class="itemSelect" name="select" style="width:100%;height:20px">
+                                    
                                 </select>
                             </div>
                             <div class="form-group">
@@ -102,8 +109,8 @@
                             </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="insert_table">Save changes</button>
+                        <button type="button" class="btn btn-secondary" id="reset">Reset</button>
                     </div>
                 </form>
             </div>
@@ -114,6 +121,9 @@
     <script>
         $(document).ready(function(){
             $(".itemSelect").select2({
+                theme:'classic'
+            });
+            $(".supplier").select2({
                 theme:'classic'
             });
             let item;
@@ -169,6 +179,32 @@
                     // })
             });
             
+
+            $('.supplier').on('change',function(){
+                let id = $('.supplier').val()
+                 $('.supplier').attr('disabled',true)
+                console.log(id)
+                $.ajax({
+                        url:"request/get_supplier/"+id,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        dataType:'json',
+                        success:function(res){
+                            let option ='';
+                            $.each(res, function(key, item){
+                                option='<option value="'+item["id_barang"]+'">'+item["nama"]+'</option>';
+                                $('.itemSelect').append(option)
+                            });
+                        }
+                    })
+            });
+
+            $('#reset').on('click',function(){
+                $('.supplier').attr('disabled',false)
+                $('.itemSelect').html('')
+                $('.target').html('')
+            });
         });
     </script>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Supplier;
 use App\Models\Barang;
 use App\Models\Request as ModelsRequest;
 use Illuminate\Http\Request;
@@ -18,8 +19,13 @@ class RequestController extends Controller
 
     public function request_form()
     {
-        $post = Barang::get();
+        $post = Supplier::get();
         return view('Administrator.Request.Form.form_request', compact('post'));
+    }
+    public function get_barang_where_supplier($id)
+    {
+        $barang = Barang::where('id_supplier', $id)->get();
+        echo json_encode($barang);
     }
     public function act_req_item(Request $req)
     {
@@ -33,7 +39,8 @@ class RequestController extends Controller
         $inserRq = [
             'keterangan' => $req->ket,
             'user' => $user,
-            'status' => 0
+            'status' => 0,
+            'disetujui' => ''
         ];
         ModelsRequest::create($inserRq);
         $get_idrq = ModelsRequest::orderByDesc('id')->get();

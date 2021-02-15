@@ -57,7 +57,7 @@
                                             <th>Supplier</th>
                                             <th>Alamat</th>
                                             <th>Telp</th>
-                                            <th>aksi</th>
+                                            {{-- <th>aksi</th> --}}
                                         </thead>
                                         <tbody>
                                             {{-- @php
@@ -105,7 +105,7 @@
                     {data:'supplier', name:'supplier'},
                     {data:'alamat', name:'alamat'},
                     {data:'notel', name:'notel'},
-                    {data:'aksi',name:'aksi'},
+                    // {data:'aksi',name:'aksi'},
                 ]
             });
             $('#supplier').submit(function(e){

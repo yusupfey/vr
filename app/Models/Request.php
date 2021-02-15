@@ -10,5 +10,5 @@ class Request extends Model
 {
     use HasFactory;
     protected $table = 'request_item';
-    protected $fillable = ['keterangan', 'user'];
+    protected $fillable = ['keterangan', 'user', 'disetujui'];
 }

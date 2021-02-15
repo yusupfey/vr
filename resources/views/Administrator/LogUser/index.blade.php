@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title','MASTER USER')
+@section('title','MASTER Account')
 @section('content')
     <div class="card">
         <div class="card-body">
@@ -9,10 +9,9 @@
                     <thead>
                         <th>Action</th>
                         <th>NIK</th>
-                        <th>Nama</th>
-                        <th>Tanggal Lahir</th>
-                        <th>Alamat</th>
-                        <th>Staff</th>
+                        <th>Username</th>
+                        
+                        
                     </thead>
                     <tbody>
                         
@@ -20,10 +19,9 @@
                     <tfoot>
                         <th>Action</th>
                         <th>NIK</th>
-                        <th>Nama</th>
-                        <th>Tanggal Lahir</th>
-                        <th>Alamat</th>
-                        <th>Staff</th>
+                        <th>Username</th>
+                        
+                        
                     </tfoot>
                 </table>
             {{-- {{$post->links()}} --}}
@@ -39,7 +37,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create user</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Create Account</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -49,29 +47,18 @@
                     @csrf
                     <div class="form-group">
                         <label>NIK</label>
-                        <input type="text" name='id' Requerd class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" name='name' class="form-control" placeholder="Nama Lengkap">
-                    </div>
-                    <div class="form-group">
-                        <label>Tempat Lahir</label>
-                        <input type="text" name='tempat' class="form-control" placeholder="Tempat Lahir">
-                    </div>
-                    <div class="form-group">
-                        <label>Tanggal lahir</label>
-                        <input type="date" name='tgl_lahir' class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Alamat</label>
-                        <textarea name="alamat" id="alamat" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Position</label>
-                        <select name="position" class="form-control">
-                                            
+                        <select name="nik" class="form-control">
                         </select>
+                        <input type="text" name="id" class="form-control">
+
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name='username' class="form-control" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" name='password' class="form-control" placeholder="Password">
                     </div>
                     <hr>
                     <div class="form-group d-flex justify-content-end">
@@ -98,41 +85,39 @@
                 destroy:true,
                 processing:true,
                 serverside:true,
-                ajax:"{{route('show.user')}}",
+                ajax:"{{route('show.userAccount')}}",
                 columns:[
                     {data:'aksi',name:'aksi'},
                     {data:'nik', name:'nik'},
-                    {data:'nama', name:'nama'},
-                    {data:'tgl_lahir', name:'tgl_lahir'},
-                    {data:'Alamat', name:'Alamat'},
-                    {data:'akses', name:'akses'}
+                    {data:'username', name:'username'}
                 ]
             });
         }
         function clear(){
-            $('select[name="position"]').html('');
-            $('input[name="id"]').val('');
-            $('input[name="name"]').val('');
-            $('input[name="tempat"]').val('');
-            $('input[name="tgl_lahir"]').val('');
-            $('#alamat').val('');
-            $('input[name="id"]').attr('readonly',false);
+            $('select[name="nik"]').html('');
+            $('input[name="username"]').val('');
+            $('input[name="password"]').val('');
+            // $('input[name="tempat"]').val('');
+
             $('#act').text('Simpan')
 
 
         }
         function get_position(){
             $.ajax({
-                url:"/user/position",
+                url:"/account/nik",
                 dataType:'json',
                 success:function(res){
-                    $('select[name="position"]').append(res)
+                    $('select[name="nik"]').append(res)
                     // console.log($('select[name="position"]').html())
                 }
             })
         }
         function create(){
                 $('#form_modal').modal('show')
+                $('select[name="nik"]').show()
+                $('input[name="id"]').hide();
+
                 clear()
                 get_position();
         }
@@ -142,7 +127,7 @@
                 let data = $('#form_user').serializeArray();
                 let act = $('#act').text()
                 $.ajax({
-                    url:"/user/"+act,
+                    url:"/account/"+act,
                     method:'post',
                     data:data,
                     dataType:'json',
@@ -169,20 +154,20 @@
             $('input[name="id"]').attr('readonly',true);
             $('#act').text('Edit')
             $.ajax({
-                url:"/user/"+nik,
+                url:"/account/"+nik,
                 dataType:'json',
                 success:function(res){
-                    // $('select[name="position"]').append(res)
+                    $('select[name="nik"]').hide()
+                    $('input[name="id"]').show();
                     get_position();
-                    $('input[name="id"]').val(res[0]['nik']);
-                    $('input[name="name"]').val(res[0]['nama']);
-                    $('input[name="tempat"]').val(res[0]['temp_lahir']);
-                    $('input[name="tgl_lahir"]').val(res[0]['tgl_lahir']);
-                    $('#alamat').val(res[0]['Alamat']);
+                    $('input[name="id"]').val(res[0]['id_user']);
+                    $('input[name="username"]').val(res[0]['username']);
+                    $('input[name="password"]').val(res[0]['password']);
+                    console.log(res)
                 }
             })
         }
-        function hapus(nik){
+        function hapus(id){
             Swal.fire({
                 title: 'Anda Yakin?',
                 text: "Ingin menghapus data ini!",
@@ -194,7 +179,7 @@
                 }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url:"/user/hapus/"+nik,
+                        url:"/account/hapus/"+id,
                         headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },

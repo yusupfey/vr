@@ -10,9 +10,6 @@
     </div>
 @endif
     <div class="card">
-        <div class="card-header bg-primary">
-            Request Barang
-        </div>
         <div class="card-body">
             <a href='/request_form' class="btn btn-primary mb-3">+ Request</a>
             <div class="table-responsive">
@@ -38,8 +35,10 @@
                                     @elseif($item->status ==1)
                                         <div class="badge badge-warning"> On Proses </div>
                                     @elseif($item->status ==2)
-                                        <div class="badge badge-primary"> On Order </div>
+                                        <div class="badge badge-secondary"> wait to order </div>
                                     @elseif($item->status ==3)
+                                        <div class="badge badge-primary"> On order </div>
+                                    @elseif($item->status ==4)
                                         <div class="badge badge-info"> Sedang Dikirim </div>
                                     @else
                                     <div class="badge badge-success">Selesai</div>

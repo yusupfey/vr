@@ -66,6 +66,15 @@
                         <label>Stock</label>
                         <input type="number" name='stok' class="form-control" placeholder="Stock">
                     </div>
+                    <div class="form-group">
+                        <label>Suppier</label>
+                        <select name="supplier" class="form-control">
+                                            <option selected disabled>Pilih Supplier</option>
+                                            @foreach ($supplier as $item)
+                                                <option value="{{$item->id_supplier}}">{{$item->supplier}}</option>
+                                            @endforeach
+                        </select>
+                    </div>
                     <hr>
                     <div class="form-group d-flex justify-content-end">
                         <button type="button" class="btn btn-primary" id="simpan">Simpan</button>&nbsp;
